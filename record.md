@@ -6,3 +6,7 @@
 
 3. Integer.parseInt() 和 Integer.valueOf()方法
 > Java泛型不能使用基本类型
+>
+
+4. 开头""+细节问题
+> "" + char + char 与 char + char +""区别
