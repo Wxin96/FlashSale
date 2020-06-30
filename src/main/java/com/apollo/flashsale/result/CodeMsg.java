@@ -31,4 +31,12 @@ public class CodeMsg {
 
     //秒杀模块 5005XX
 
+
+    // 自定义异常
+    public CodeMsg fillArgs(Object... args) {
+        int code = this.code;
+        String message = String.format(this.msg, args);
+        return new CodeMsg(code, message);
+    }
+
 }
