@@ -1,7 +1,7 @@
 package com.apollo.flashsale.resolver;
 
 import com.apollo.flashsale.domain.FlashSaleUser;
-import com.apollo.flashsale.service.FlashSaleService;
+import com.apollo.flashsale.service.FlashSaleUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
     Logger logger = LoggerFactory.getLogger(FlashSaleUserArgumentResolver.class);
 
     @Autowired
-    FlashSaleService flashSaleService;
+    FlashSaleUserService flashSaleUserService;
 
     /**
      *  判断方法中的参数, 是否是 FlashSaleUser
@@ -57,8 +57,8 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
         HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
 
         // 2.从参数或者Cookie中获取 token(uuid)
-        String paramToken = request.getParameter(FlashSaleService.COOKIE_NAME_TOKEN);
-        String cookieToken = getCookieValue(request, FlashSaleService.COOKIE_NAME_TOKEN);
+        String paramToken = request.getParameter(FlashSaleUserService.COOKIE_NAME_TOKEN);
+        String cookieToken = getCookieValue(request, FlashSaleUserService.COOKIE_NAME_TOKEN);
         logger.debug("paramToken:" + paramToken);
         logger.debug("cookieToken:" + cookieToken);
 
@@ -69,7 +69,7 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
         String token = StringUtils.isEmpty(paramToken) ? cookieToken : paramToken;
         logger.debug("token:" + token);
 
-        return flashSaleService.getByToken(response, token);
+        return flashSaleUserService.getByToken(response, token);
     }
 
     /**

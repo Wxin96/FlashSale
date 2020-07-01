@@ -8,11 +8,11 @@ public class CodeMsg {
     private int code;
     // 信息
     private String msg;
-
     private CodeMsg(int code, String msg) {
         this.code = code;
         this.msg = msg;
     }
+
 
     // 通用异常
     public static CodeMsg SUCCESS = new CodeMsg(0, "success");
@@ -30,6 +30,8 @@ public class CodeMsg {
     //订单模块 5004XX
 
     //秒杀模块 5005XX
+    public static CodeMsg FLASH_SALE_OVER = new CodeMsg(500500, "商品已经秒杀完毕");
+    public static CodeMsg REPEAT_FLASH_SALE = new CodeMsg(500501, "不能重复秒杀");
 
 
     // 自定义异常

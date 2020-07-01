@@ -1,7 +1,7 @@
 package com.apollo.flashsale.controller;
 
 import com.apollo.flashsale.result.Result;
-import com.apollo.flashsale.service.FlashSaleService;
+import com.apollo.flashsale.service.FlashSaleUserService;
 import com.apollo.flashsale.vo.LoginVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class LoginController {
     private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
-    FlashSaleService flashSaleService;
+    FlashSaleUserService flashSaleUserService;
 
     @RequestMapping("/to_login")
     public String toLogin() {
@@ -32,7 +32,7 @@ public class LoginController {
     public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
         logger.info(loginVo.toString());
         // 登录(如果有异常会走异常拦截的线)
-        flashSaleService.login(response, loginVo);
+        flashSaleUserService.login(response, loginVo);
         // 判断
         return Result.success(true);
     }

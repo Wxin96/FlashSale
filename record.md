@@ -10,3 +10,10 @@
 
 4. 开头""+细节问题
 > "" + char + char 与 char + char +""区别
+
+5. WebConfig注入FlashSaleUserArgumentResolver, 使用时的空指针问题
+
+6. ThymeLeaf动态标签href的使用
+
+7. `===` 严格相等，会比较两个值的类型和值
+   `==`  抽象相等，比较时，会先进行类型转换，然后再比较值
