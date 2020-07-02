@@ -45,7 +45,7 @@ public class FlashSaleUserService {
         // 2.延长有效期
         if (user != null) {
             addCookie(response, token, user);
-            log.info(user.toString());
+            log.debug(user.toString());
         } else {
             log.info("user为空");
         }

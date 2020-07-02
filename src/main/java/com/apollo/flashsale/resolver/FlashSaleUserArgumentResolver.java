@@ -81,7 +81,11 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
     private String getCookieValue(HttpServletRequest request, String cookieName) {
         // 1.获取Cookies
         Cookie[] cookies = request.getCookies();
-        // 2.寻找key==cookieName的Cookie
+        // 2.处理空指针异常
+        if (cookies == null || cookies.length <= 0) {
+            return null;
+        }
+        // 3.寻找key==cookieName的Cookie
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(cookieName)) {
                 return cookie.getValue();
