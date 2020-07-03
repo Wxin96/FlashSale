@@ -2,9 +2,11 @@ package com.apollo.flashsale.controller;
 
 import com.apollo.flashsale.domain.FlashSaleUser;
 import com.apollo.flashsale.redis.key.impl.GoodsKey;
+import com.apollo.flashsale.result.Result;
 import com.apollo.flashsale.service.FlashSaleUserService;
 import com.apollo.flashsale.service.GoodsService;
 import com.apollo.flashsale.service.RedisService;
+import com.apollo.flashsale.vo.GoodsDetailVo;
 import com.apollo.flashsale.vo.GoodsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +93,7 @@ public class GoodsController {
      * @param goodsId 货品的id
      * @return 静态页面
      */
-    @RequestMapping(value = "/to_detail/{goodsId}", produces = "text/html")
+    @RequestMapping(value = "/to_detail2/{goodsId}", produces = "text/html")
     @ResponseBody
     public String detail(HttpServletRequest request, HttpServletResponse response, Model model,
                          FlashSaleUser user, @PathVariable("goodsId") long goodsId) {
@@ -147,39 +149,46 @@ public class GoodsController {
         return goodsDetailHtml;
     }
 
-    @RequestMapping("/to_detail/{goodsId}")
-    public String detail_old(Model model, FlashSaleUser user, @PathVariable("goodsId") long goodsId) {
-        // 1.将用户信息放入
-        model.addAttribute("user", user);
-        // 2.获取秒杀商品信息并放入
+    /**
+     *  页面静态化, 异步请求页面的动态数据
+     * @param user 根据分布式Session获取页面的动态数据
+     * @param goodsId 物品ID号
+     * @return 返回动态数据的json数据
+     */
+    @RequestMapping("/detail/{goodsId}")
+    @ResponseBody
+    public Result<GoodsDetailVo> detail(FlashSaleUser user, @PathVariable("goodsId") long goodsId) {
+        // 0.日志记录
+        log.trace("商品列表页 : 页面静态化, 异步请求页面的动态数据");
+        // 1.获取秒杀商品信息
         GoodsVo goods = goodsService.getGoodsVoGoodsId(goodsId);
-        model.addAttribute("goods", goods);
-        // 3.获取秒杀时间
-        long startTime = goods.getStartDate().getTime();
-        long endTime = goods.getEndDate().getTime();
-        long curTime = System.currentTimeMillis();
-        log.info(goods.getStartDate().toString());
-        log.info(goods.getEndDate().toString());
+        // 2.计算秒杀信息
+        long startTime = goods.getStartDate().getTime(),
+                endTime = goods.getEndDate().getTime(),
+                curTime = System.currentTimeMillis();
+        log.debug("物品" + goodsId + "秒杀开始时间 : " + goods.getStartDate().toString());
+        log.debug("物品" + goodsId + "秒杀结束时间 : " + goods.getEndDate().toString());
 
-        int flashSaleStatus = 0;
-        int remainSeconds = 0;
+        int flashSaleStatus = 0, remainSeconds = 0;
         if (curTime < startTime) {//秒杀还没开始，倒计时
-            // flashSaleStatus = 0;
-            log.info("秒杀未开始");
             remainSeconds = (int) ((startTime - curTime) / 1000);
+            log.debug("秒杀未开始, 剩余时间为 : " + remainSeconds + " 秒");
         } else if (curTime > endTime) {//秒杀已经结束
-            log.info("秒杀结束");
+            log.debug("秒杀结束");
             flashSaleStatus = 2;
             remainSeconds = -1;
         } else {//秒杀进行中
-            log.info("秒杀进行中..");
+            log.debug("秒杀进行中..");
             flashSaleStatus = 1;
-            // remainSeconds = 0;
         }
-        model.addAttribute("flashSaleStatus", flashSaleStatus);
-        model.addAttribute("remainSeconds", remainSeconds);
+        // 3.绑定数据
+        GoodsDetailVo vo = new GoodsDetailVo();
+        vo.setGoods(goods);
+        vo.setUser(user);
+        vo.setFlashSaleStatus(flashSaleStatus);
+        vo.setRemainSeconds(remainSeconds);
 
-        return "goods_detail";
+        return Result.success(vo);
     }
 
 }

@@ -4,7 +4,9 @@ import com.apollo.flashsale.dao.OrderDao;
 import com.apollo.flashsale.domain.FlashSaleOrder;
 import com.apollo.flashsale.domain.FlashSaleUser;
 import com.apollo.flashsale.domain.OrderInfo;
+import com.apollo.flashsale.redis.key.impl.OrderKey;
 import com.apollo.flashsale.vo.GoodsVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +19,18 @@ public class OrderService {
     @Resource
     OrderDao orderDao;
 
-    public FlashSaleOrder getFlashSaleOrderByUserIdGoodsId(Long id, long goodsId) {
-        return orderDao.getFlashSaleOrderByUserIdGoodsId(id, goodsId);
+    @Autowired
+    RedisService redisService;
+
+    public FlashSaleOrder getFlashSaleOrderByUserIdGoodsId(Long userId, long goodsId) {
+        // return orderDao.getFlashSaleOrderByUserIdGoodsId(id, goodsId);
+        return redisService.get(OrderKey.getFlashSaleOrderKey, "" + userId + "_" + goodsId, FlashSaleOrder.class);
     }
+
+    public OrderInfo getOrderById(long orderId) {
+        return orderDao.getOrderById(orderId);
+    }
+
 
     @Transactional
     public OrderInfo createOrder(FlashSaleUser fsUser, GoodsVo goods) {
@@ -45,6 +56,7 @@ public class OrderService {
         fsOrder.setGoodsId(goods.getId());
 
         orderDao.insertFlashSaleOrder(fsOrder);
+        redisService.set(OrderKey.getFlashSaleOrderKey, "" + fsUser.getId() + "_" + goods.getId(), fsOrder);
 
         return orderInfo;
     }

@@ -18,4 +18,6 @@ public interface OrderDao {
     @Insert("insert into flash_sale_order(user_id, order_id, goods_id) values(#{userId}, #{orderId}, #{goodsId});")
     int insertFlashSaleOrder(FlashSaleOrder flashSaleOrder);
 
+    @Select("select * from order_info where id = #{orderId}")
+    OrderInfo getOrderById(@Param("orderId") long orderId);
 }

@@ -31,7 +31,7 @@ public interface GoodsDao {
      * @param flashSaleGoods 对应的秒杀商品
      * @return 返回更改的行数
      */
-    @Update("update flash_sale_goods set stock_count = stock_count - 1 where goods_Id = #{goodsId}")
+    @Update("update flash_sale_goods set stock_count = stock_count - 1 where goods_Id = #{goodsId} and stock_count > 0")
     int reduceStock(FlashSaleGoods flashSaleGoods);
 
 }

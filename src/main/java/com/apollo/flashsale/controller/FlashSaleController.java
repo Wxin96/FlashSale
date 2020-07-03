@@ -4,14 +4,18 @@ import com.apollo.flashsale.domain.FlashSaleOrder;
 import com.apollo.flashsale.domain.FlashSaleUser;
 import com.apollo.flashsale.domain.OrderInfo;
 import com.apollo.flashsale.result.CodeMsg;
+import com.apollo.flashsale.result.Result;
 import com.apollo.flashsale.service.*;
 import com.apollo.flashsale.vo.GoodsVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+@Slf4j
 @Controller
 @RequestMapping("/sell")
 public class FlashSaleController {
@@ -31,35 +35,28 @@ public class FlashSaleController {
     @Autowired
     FlashSaleService flashSaleService;
 
-    @RequestMapping("/do_sell")
-    public String list(Model model, FlashSaleUser user,
-                       @RequestParam("goodsId") long goodsId) {
+    @PostMapping("/do_sell")
+    @ResponseBody
+    public Result<OrderInfo> list(FlashSaleUser user, @RequestParam("goodsId") long goodsId) {
         // 1.判断用户是否登录
-        model.addAttribute("user", user);
         if (user == null) {
-            return "login";
+            return Result.error(CodeMsg.SESSION_ERROR);
         }
         // 2.判断库存
         GoodsVo goods = goodsService.getGoodsVoGoodsId(goodsId);
         int stock = goods.getStockCount();
         if (stock <= 0) {
-            model.addAttribute("errMsg", CodeMsg.FLASH_SALE_OVER.getMsg());
-            return "flashSale_fail";
+            return Result.error(CodeMsg.FLASH_SALE_OVER);
         }
-
         // 3.判断是否已经秒杀到
         FlashSaleOrder fsOrder = orderService.getFlashSaleOrderByUserIdGoodsId(user.getId(), goodsId);
         if (fsOrder != null) {
-            model.addAttribute("errMsg", CodeMsg.REPEAT_FLASH_SALE.getMsg());
-            return "flashSale_fail";
+            return Result.error(CodeMsg.REPEAT_FLASH_SALE);
         }
-
         // 4.进行秒杀
         OrderInfo orderInfo = flashSaleService.flashSale(user, goods);
-        model.addAttribute("orderInfo", orderInfo);
-        model.addAttribute("goods", goods);
 
-        return "order_detail";
+        return Result.success(orderInfo);
     }
 
 

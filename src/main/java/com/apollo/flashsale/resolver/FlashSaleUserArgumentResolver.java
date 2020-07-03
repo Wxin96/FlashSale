@@ -59,8 +59,8 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
         // 2.从参数或者Cookie中获取 token(uuid)
         String paramToken = request.getParameter(FlashSaleUserService.COOKIE_NAME_TOKEN);
         String cookieToken = getCookieValue(request, FlashSaleUserService.COOKIE_NAME_TOKEN);
-        logger.info("请求参数中paramToken:" + paramToken);
-        logger.info("Cookie中cookieToken:" + cookieToken);
+        logger.debug("请求参数中paramToken:" + paramToken);
+        logger.debug("Cookie中cookieToken:" + cookieToken);
 
         // 3.根据这两个参数, 确定优先级获取FlashSaleUser
         if (StringUtils.isEmpty(paramToken) && StringUtils.isEmpty(cookieToken)) {

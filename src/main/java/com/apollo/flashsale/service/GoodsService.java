@@ -24,11 +24,12 @@ public class GoodsService {
         return goodsDao.getGoodsVoByGoodsId(goodsId);
     }
 
-    public void reduceStock(GoodsVo goodsVo) {
+    public boolean reduceStock(GoodsVo goodsVo) {
         // GoodsVo中id就是FlashSaleGoods的goodsId
         FlashSaleGoods flashSaleGoods = new FlashSaleGoods();
         flashSaleGoods.setGoodsId(goodsVo.getId());
-        goodsDao.reduceStock(flashSaleGoods);
+        int change = goodsDao.reduceStock(flashSaleGoods);
+        return change >= 1;
     }
 
 
