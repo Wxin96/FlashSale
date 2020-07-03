@@ -4,7 +4,7 @@ import com.apollo.flashsale.dao.FlashSaleUserDao;
 import com.apollo.flashsale.domain.FlashSaleUser;
 import com.apollo.flashsale.exception.GlobalException;
 import com.apollo.flashsale.result.CodeMsg;
-import com.apollo.flashsale.result.key.impl.FlashSaleUserKey;
+import com.apollo.flashsale.redis.key.impl.FlashSaleUserKey;
 import com.apollo.flashsale.util.MD5Util;
 import com.apollo.flashsale.util.UUIDUtil;
 import com.apollo.flashsale.vo.LoginVo;
@@ -29,9 +29,59 @@ public class FlashSaleUserService {
     @Autowired
     RedisService redisService;
 
+    /**
+     *  对象缓存
+     * @param id FlashSaleUser的用户id
+     * @return FlashSaleUser信息
+     */
     public FlashSaleUser getById(long id) {
-        return flashSaleUserDao.getById(id);
+        /*---------------------------取缓存---------------------------*/
+        FlashSaleUser flashSaleUser = redisService.get(FlashSaleUserKey.getById, "" + id, FlashSaleUser.class);
+        if (flashSaleUser != null) {
+            log.debug("FlashSaleUser id查询, 用的是Redis缓存中的数据.");
+            return flashSaleUser;
+        }
+        /*---------------------------取数据库---------------------------*/
+        flashSaleUser = flashSaleUserDao.getById(id);
+        if (flashSaleUser != null) {
+            redisService.set(FlashSaleUserKey.getById, "" + id, flashSaleUser);
+            log.debug("FlashSaleUser信息存入Redis缓存中.");
+        }
+
+        log.debug("FlashSaleUser id查询, 用的是MySql中的数据.");
+        return flashSaleUser;
     }
+
+    /**
+     *  更新密码
+     * @param token cookie标志
+     * @param id 对应FlashSaleUser用户id
+     * @param fromPass 新的表单密码
+     * @return 是否成功
+     */
+    public boolean updatePassword(String token, long id, String fromPass) {
+        // 1.取user
+        FlashSaleUser user = this.getById(id);
+        if (user == null) {
+            throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
+        }
+        // 2.更新数据库
+        FlashSaleUser toBeUpdateUser = new FlashSaleUser();
+        toBeUpdateUser.setId(id);
+        toBeUpdateUser.setPassword(MD5Util.formPassToDBPass(fromPass, user.getSalt()));
+        flashSaleUserDao.updatePassword(toBeUpdateUser);
+        // 3.处理缓存
+        // a.删除原缓存(让原缓存失效)
+        redisService.delete(FlashSaleUserKey.getById, "" + id);
+        user.setPassword(toBeUpdateUser.getPassword());
+        // b.更新缓存(全局Session的缓存)
+        // redisService.set(FlashSaleUserKey.getById, "" + id, user);
+        redisService.set(FlashSaleUserKey.token, token, user);
+
+        return true;
+    }
+
+
 
     // 根据Cookie中的token信息, 获取FlashSaleUser对象
     public FlashSaleUser getByToken(HttpServletResponse response, String token) {
@@ -45,9 +95,9 @@ public class FlashSaleUserService {
         // 2.延长有效期
         if (user != null) {
             addCookie(response, token, user);
-            log.debug(user.toString());
+            log.info("在Redis缓存中根据分布式Session查到用户信息为 : " + user.toString());
         } else {
-            log.info("user为空");
+            log.warn("user为空");
         }
 
 

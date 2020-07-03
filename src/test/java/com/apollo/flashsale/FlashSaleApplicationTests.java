@@ -1,7 +1,7 @@
 package com.apollo.flashsale;
 
 import com.apollo.flashsale.dao.GoodsDao;
-import com.apollo.flashsale.result.key.impl.FlashSaleUserKey;
+import com.apollo.flashsale.redis.key.impl.FlashSaleUserKey;
 import com.apollo.flashsale.util.MD5Util;
 import com.apollo.flashsale.util.UUIDUtil;
 import com.apollo.flashsale.util.UserUtil;

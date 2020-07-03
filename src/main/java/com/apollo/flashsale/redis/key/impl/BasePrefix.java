@@ -1,6 +1,6 @@
-package com.apollo.flashsale.result.key.impl;
+package com.apollo.flashsale.redis.key.impl;
 
-import com.apollo.flashsale.result.key.KeyPrefix;
+import com.apollo.flashsale.redis.key.KeyPrefix;
 
 /**
  *  前缀抽象类

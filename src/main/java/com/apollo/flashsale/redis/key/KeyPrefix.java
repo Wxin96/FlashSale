@@ -1,4 +1,4 @@
-package com.apollo.flashsale.result.key;
+package com.apollo.flashsale.redis.key;
 
 /**
  *  前缀接口

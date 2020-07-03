@@ -24,13 +24,14 @@ public class LoginController {
 
     @RequestMapping("/to_login")
     public String toLogin() {
+        logger.trace("用户登录.");
         return "login";
     }
 
     @RequestMapping("/do_login")
     @ResponseBody
     public Result<String> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
-        logger.info(loginVo.toString());
+        logger.trace("用户登录提交信息:" + loginVo.toString());
         // 登录(如果有异常会走异常拦截的线)
         String token = flashSaleUserService.login(response, loginVo);
         // 判断

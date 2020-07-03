@@ -1,4 +1,4 @@
-package com.apollo.flashsale.result.key.impl;
+package com.apollo.flashsale.redis.key.impl;
 
 public class UserKey extends BasePrefix {
 

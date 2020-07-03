@@ -1,7 +1,8 @@
 package com.apollo.flashsale.service;
 
 import com.alibaba.fastjson.JSON;
-import com.apollo.flashsale.result.key.KeyPrefix;
+import com.apollo.flashsale.redis.key.KeyPrefix;
+import com.apollo.flashsale.redis.key.impl.FlashSaleUserKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
@@ -55,12 +56,30 @@ public class RedisService {
             String strValue = beanToString(value);
             // 4.获取保存时间
             int expireSeconds = prefix.expireSeconds();
+            // 永不过期
             if (expireSeconds <= 0) {
                 jedis.set(realKey, strValue);
             } else {
+                // 设置过期时间
                 jedis.setex(realKey, expireSeconds, strValue);
             }
             return true;
+        } finally {
+            returnToPool(jedis);
+        }
+    }
+
+    public boolean delete(FlashSaleUserKey prefix, String key) {
+        Jedis jedis = null;
+        try {
+            // 1.获取链接
+            jedis = jedisPool.getResource();
+            // 2.生成真正的key
+            String realKey = prefix.getPrefix() + key;
+            // 3.删除
+            Long del = jedis.del(realKey);
+
+            return del > 0;
         } finally {
             returnToPool(jedis);
         }
@@ -187,6 +206,5 @@ public class RedisService {
             jedis.close();
         }
     }
-
 
 }

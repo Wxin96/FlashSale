@@ -3,7 +3,7 @@ package com.apollo.flashsale.controller;
 import com.apollo.flashsale.domain.User;
 import com.apollo.flashsale.result.CodeMsg;
 import com.apollo.flashsale.result.Result;
-import com.apollo.flashsale.result.key.impl.UserKey;
+import com.apollo.flashsale.redis.key.impl.UserKey;
 import com.apollo.flashsale.service.RedisService;
 import com.apollo.flashsale.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
