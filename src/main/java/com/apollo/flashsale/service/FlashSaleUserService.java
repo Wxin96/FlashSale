@@ -55,7 +55,7 @@ public class FlashSaleUserService {
     }
 
 
-    public boolean login(HttpServletResponse response, LoginVo loginVo) {
+    public String login(HttpServletResponse response, LoginVo loginVo) {
         if (loginVo == null) {
             throw new GlobalException(CodeMsg.SERVER_ERROR);
         }
@@ -77,7 +77,7 @@ public class FlashSaleUserService {
         String token = UUIDUtil.uuid();
         addCookie(response, token, user);
 
-        return true;
+        return token;
     }
 
 

@@ -4,6 +4,7 @@ import com.apollo.flashsale.dao.GoodsDao;
 import com.apollo.flashsale.result.key.impl.FlashSaleUserKey;
 import com.apollo.flashsale.util.MD5Util;
 import com.apollo.flashsale.util.UUIDUtil;
+import com.apollo.flashsale.util.UserUtil;
 import com.apollo.flashsale.util.ValidatorUtil;
 import com.apollo.flashsale.vo.GoodsVo;
 import org.junit.jupiter.api.Test;
@@ -67,5 +68,10 @@ class FlashSaleApplicationTests {
         System.out.println(good.getStartDate().getTime());
         System.out.println(good.getEndDate().getTime());
         System.out.println(System.currentTimeMillis());
+    }
+
+    @Test
+    void testUserUtil() throws Exception {
+        UserUtil.createUser(5000);
     }
 }

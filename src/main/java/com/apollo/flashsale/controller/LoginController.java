@@ -29,11 +29,11 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
+    public Result<String> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
         logger.info(loginVo.toString());
         // 登录(如果有异常会走异常拦截的线)
-        flashSaleUserService.login(response, loginVo);
+        String token = flashSaleUserService.login(response, loginVo);
         // 判断
-        return Result.success(true);
+        return Result.success(token);
     }
 }

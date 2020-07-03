@@ -11,7 +11,7 @@
     <groupId>com.apollo</groupId>
     <artifactId>flash-sale</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>flash-sale</name>
     <description>Flash sale sites</description>
 
@@ -20,12 +20,12 @@
     </properties>
 
     <dependencies>
-        <!-- Tomcat设置编译时期运行 -->
+<!--        &lt;!&ndash; Tomcat设置编译时期运行 &ndash;&gt;
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
