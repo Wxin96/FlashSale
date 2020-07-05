@@ -35,6 +35,12 @@ public class FlashSaleController {
     @Autowired
     FlashSaleService flashSaleService;
 
+    /**
+     *  第 5 章 2054 /sec
+     * @param user 秒杀用户
+     * @param goodsId 货物Id
+     * @return  秒杀信息
+     */
     @PostMapping("/do_sell")
     @ResponseBody
     public Result<OrderInfo> list(FlashSaleUser user, @RequestParam("goodsId") long goodsId) {

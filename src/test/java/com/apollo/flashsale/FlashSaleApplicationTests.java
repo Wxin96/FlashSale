@@ -4,7 +4,6 @@ import com.apollo.flashsale.dao.GoodsDao;
 import com.apollo.flashsale.redis.key.impl.FlashSaleUserKey;
 import com.apollo.flashsale.util.MD5Util;
 import com.apollo.flashsale.util.UUIDUtil;
-import com.apollo.flashsale.util.UserUtil;
 import com.apollo.flashsale.util.ValidatorUtil;
 import com.apollo.flashsale.vo.GoodsVo;
 import org.junit.jupiter.api.Test;
@@ -72,6 +71,6 @@ class FlashSaleApplicationTests {
 
     @Test
     void testUserUtil() throws Exception {
-        UserUtil.createUser(5000);
+        // UserUtil.createUser(5000);
     }
 }
