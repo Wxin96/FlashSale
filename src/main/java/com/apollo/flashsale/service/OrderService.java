@@ -47,17 +47,23 @@ public class OrderService {
         orderInfo.setOrderChannel(1);
 
         // 2.存入数据库
-        long orderId = orderDao.insert(orderInfo);
+        // [id自增赋值到哪里? => orderInfo.id中]
+        orderDao.insert(orderInfo);
 
         // 3.生成秒杀订单, 并存入数据库
         FlashSaleOrder fsOrder = new FlashSaleOrder();
         fsOrder.setUserId(fsUser.getId());
-        fsOrder.setOrderId(orderId);
+        fsOrder.setOrderId(orderInfo.getId());
         fsOrder.setGoodsId(goods.getId());
 
         orderDao.insertFlashSaleOrder(fsOrder);
         redisService.set(OrderKey.getFlashSaleOrderKey, "" + fsUser.getId() + "_" + goods.getId(), fsOrder);
 
         return orderInfo;
+    }
+
+    public void deleteOrders() {
+        orderDao.deleteOrders();
+        orderDao.deleteFlashSaleOrders();
     }
 }

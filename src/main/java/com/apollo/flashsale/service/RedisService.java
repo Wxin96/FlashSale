@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RedisService {
@@ -16,10 +21,11 @@ public class RedisService {
 
     /**
      * 获取单个对象
+     *
      * @param prefix 前缀
-     * @param key id
-     * @param clazz 实体类型字节码
-     * @param <T> 实体类型泛型
+     * @param key    id
+     * @param clazz  实体类型字节码
+     * @param <T>    实体类型泛型
      * @return
      */
     public <T> T get(KeyPrefix prefix, String key, Class<T> clazz) {
@@ -38,11 +44,12 @@ public class RedisService {
     }
 
     /**
-     *  设置对象
+     * 设置对象
+     *
      * @param prefix 前缀
-     * @param key id
-     * @param value 封装对象
-     * @param <T> 封装对象泛型
+     * @param key    id
+     * @param value  封装对象
+     * @param <T>    封装对象泛型
      * @return 成功返回true
      */
     public <T> boolean set(KeyPrefix prefix, String key, T value) {
@@ -85,10 +92,59 @@ public class RedisService {
         }
     }
 
+    public boolean delete(KeyPrefix prefix) {
+        // 0.预处理
+        if (prefix == null) {
+            return false;
+        }
+        // 1.获取相关key
+        List<String> keys = scanKeys(prefix.getPrefix());
+        if (keys == null || keys.size() <= 0) {
+            return true;
+        }
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.del(keys.toArray(new String[0]));
+            return true;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            returnToPool(jedis);
+        }
+
+    }
+
+    public List<String> scanKeys(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            List<String> keys = new ArrayList<>();
+            String cursor = "0";
+            ScanParams sp = new ScanParams();
+            sp.match("*" + key + "*");
+            sp.count(100);
+            do {
+                ScanResult<String> ret = jedis.scan(cursor, sp);
+                List<String> result = ret.getResult();
+                if (result != null && result.size() > 0) {
+                    keys.addAll(result);
+                }
+                //再处理cursor
+                cursor = ret.getCursor();
+            } while (!cursor.equals("0"));
+            return keys;
+        } finally {
+            returnToPool(jedis);
+        }
+    }
+
     /**
-     *  判断key是否存在
+     * 判断key是否存在
+     *
      * @param prefix 前缀
-     * @param key id
+     * @param key    id
      * @return 存在返回true, 不存在返回false
      */
     public boolean exists(KeyPrefix prefix, String key) {
@@ -107,8 +163,9 @@ public class RedisService {
 
     /**
      * 增加值
+     *
      * @param prefix 前缀
-     * @param key id
+     * @param key    id
      * @return 增加后的数值
      */
     public <T> Long incr(KeyPrefix prefix, String key) {
@@ -127,8 +184,9 @@ public class RedisService {
 
     /**
      * 减小值
+     *
      * @param prefix 前缀
-     * @param key id
+     * @param key    id
      * @return 减小后的数值
      */
     public <T> Long decr(KeyPrefix prefix, String key) {
@@ -148,13 +206,15 @@ public class RedisService {
 
     /**
      * JSON字符串转换为实体类对象
-     * @param str JSON字符串
+     * 修改一次: 改成 静态 共有方法 便于MQ使用
+     *
+     * @param str   JSON字符串
      * @param clazz 要转化类的字节码
-     * @param <T> 要转化类的泛型
+     * @param <T>   要转化类的泛型
      * @return 返回实体类对象
      */
     @SuppressWarnings("unchecked")
-    private <T> T stringToBean(String str, Class<T> clazz) {
+    public static <T> T stringToBean(String str, Class<T> clazz) {
         // 0.预处理
         if (str == null || str.length() <= 0 || clazz == null) {
             return null;
@@ -173,12 +233,14 @@ public class RedisService {
     }
 
     /**
-     *  实体类对象转化为字符串
+     * 实体类对象转化为字符串
+     * 修改一次: 改成 静态 共有方法 便于MQ使用
+     *
      * @param value 实体类对象
-     * @param <T> 实体类对象泛型
+     * @param <T>   实体类对象泛型
      * @return JSON字符串
      */
-    private <T> String beanToString(T value) {
+    public static <T> String beanToString(T value) {
         // 0.预处理
         if (value == null) {
             return null;
@@ -198,7 +260,8 @@ public class RedisService {
     }
 
     /**
-     *  将Jedis连接返回JedisPool中
+     * 将Jedis连接返回JedisPool中
+     *
      * @param jedis 单个jedis连接
      */
     private void returnToPool(Jedis jedis) {

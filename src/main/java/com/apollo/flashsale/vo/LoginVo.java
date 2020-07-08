@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public class LoginVo {
 
     @NotNull
-    @IsMobile
+    @IsMobile(required = false)
     private String mobile;
 
     @NotNull

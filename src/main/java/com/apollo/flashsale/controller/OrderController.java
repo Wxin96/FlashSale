@@ -41,7 +41,7 @@ public class OrderController {
             return Result.error(CodeMsg.ORDER_NOT_EXIST);
         }
         // 3.查询物品信息
-        GoodsVo goods = goodsService.getGoodsVoGoodsId(order.getGoodsId());
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(order.getGoodsId());
         // 4.封装订单信息
         OrderDetailVo orderDetailVo = new OrderDetailVo();
         orderDetailVo.setGoods(goods);

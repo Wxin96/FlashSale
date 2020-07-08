@@ -19,4 +19,7 @@ public class GoodsKey extends BasePrefix {
     // 物品细节页面的Redis键值前缀
     public static GoodsKey getGoodsDetail = new GoodsKey(EXPIRED_SECONDS, "gd");
 
+    // 秒杀物品的剩余数量, FlashSaleController初始化和秒杀预减库存时调用
+    public static GoodsKey getFlashSaleGoodsStock = new GoodsKey(0, "gs");
+
 }

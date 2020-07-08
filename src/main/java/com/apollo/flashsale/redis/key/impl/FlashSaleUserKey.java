@@ -8,7 +8,8 @@ package com.apollo.flashsale.redis.key.impl;
 public class FlashSaleUserKey extends BasePrefix {
 
     // 两天
-    public static final int TOKEN_EXPIRE = 3600 * 24 * 2;
+    // public static final int TOKEN_EXPIRE = 3600 * 24 * 2;
+    public static final int TOKEN_EXPIRE = 0;
 
     public FlashSaleUserKey(int expireSeconds, String prefix) {
         super(expireSeconds, prefix);

@@ -107,7 +107,7 @@ public class GoodsController {
         }
         /*---------------------------手动渲染---------------------------*/
         // 2.查询 [mysql] 数据库, 获取秒杀商品信息并放入
-        GoodsVo goods = goodsService.getGoodsVoGoodsId(goodsId);
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
 
         // 3.获取秒杀信息
         long startTime = goods.getStartDate().getTime(),
@@ -161,7 +161,7 @@ public class GoodsController {
         // 0.日志记录
         log.trace("商品列表页 : 页面静态化, 异步请求页面的动态数据");
         // 1.获取秒杀商品信息
-        GoodsVo goods = goodsService.getGoodsVoGoodsId(goodsId);
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
         // 2.计算秒杀信息
         long startTime = goods.getStartDate().getTime(),
                 endTime = goods.getEndDate().getTime(),

@@ -20,7 +20,7 @@ public class GoodsService {
     }
 
     // 获取特定秒杀商品
-    public GoodsVo getGoodsVoGoodsId(long goodsId) {
+    public GoodsVo getGoodsVoByGoodsId(long goodsId) {
         return goodsDao.getGoodsVoByGoodsId(goodsId);
     }
 
@@ -33,4 +33,13 @@ public class GoodsService {
     }
 
 
+    public void resetStock(List<GoodsVo> goodsList) {
+        for(GoodsVo goods : goodsList ) {
+            FlashSaleGoods g = new FlashSaleGoods();
+            g.setGoodsId(goods.getId());
+            g.setStockCount(goods.getStockCount());
+            goodsDao.resetStock(g);
+        }
+
+    }
 }

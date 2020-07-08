@@ -1,6 +1,7 @@
 package com.apollo.flashsale.controller;
 
 import com.apollo.flashsale.domain.User;
+import com.apollo.flashsale.rabbitmq.MQSender;
 import com.apollo.flashsale.result.CodeMsg;
 import com.apollo.flashsale.result.Result;
 import com.apollo.flashsale.redis.key.impl.UserKey;
@@ -22,6 +23,9 @@ public class DemoController {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    MQSender mqSender;
 
     @GetMapping("/")
     @ResponseBody
@@ -77,4 +81,34 @@ public class DemoController {
         boolean flag = redisService.set(UserKey.getById, "" + 1, u1);
         return Result.success(flag);
     }
+
+/*    @RequestMapping("/mq")
+    @ResponseBody
+    public Result<String> mq() {
+        mqSender.send("hello, rabbitmq");
+        return Result.success("hello, rabbitmq");
+    }
+
+    @RequestMapping("/mq/topic")
+    @ResponseBody
+    public Result<String> topic() {
+        mqSender.sendTopic("hello, rabbitmq~");
+        return Result.success("Hello, world~");
+    }
+
+    @RequestMapping("/mq/fanout")
+    @ResponseBody
+    public Result<String> fanout() {
+        mqSender.sendFanout("hello, rabbitmq!");
+        return Result.success("Hello, world~");
+    }
+
+    @RequestMapping("/mq/header")
+    @ResponseBody
+    public Result<String> header() {
+        mqSender.sendHeader("hello, rabbitmq&");
+        return Result.success("Hello, world&");
+    }
+ */
+
 }

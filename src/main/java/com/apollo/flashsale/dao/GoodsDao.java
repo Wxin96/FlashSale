@@ -34,4 +34,11 @@ public interface GoodsDao {
     @Update("update flash_sale_goods set stock_count = stock_count - 1 where goods_Id = #{goodsId} and stock_count > 0")
     int reduceStock(FlashSaleGoods flashSaleGoods);
 
+    /**
+     *  秒杀商品库存重置
+     * @param g 对应的秒杀商品
+     * @return 返回更改的行数
+     */
+    @Update("update flash_sale_goods set stock_count = #{stockCount} where goods_id = #{goodsId}")
+    int resetStock(FlashSaleGoods g);
 }
