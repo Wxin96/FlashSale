@@ -52,6 +52,7 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        logger.trace("解析FlashSaleUser用户~");
         // 1.获取request和response
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
@@ -64,6 +65,7 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
 
         // 3.根据这两个参数, 确定优先级获取FlashSaleUser
         if (StringUtils.isEmpty(paramToken) && StringUtils.isEmpty(cookieToken)) {
+            logger.debug("Cookie和请求参数中均没有token的值!");
             return null;
         }
         String token = StringUtils.isEmpty(paramToken) ? cookieToken : paramToken;

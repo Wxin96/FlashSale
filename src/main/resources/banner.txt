@@ -20,3 +20,5 @@
 //      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        //
 //            佛祖保佑       永不宕机     永无BUG                    //
 ////////////////////////////////////////////////////////////////////
+             ::SpringBoot Version::: ${spring-boot.formatted-version}
+        ${application.title}             ${application.version}

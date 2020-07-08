@@ -29,6 +29,7 @@ public class FlashSaleService {
     public OrderInfo flashSale(FlashSaleUser user, GoodsVo goods) {
         // 减库存, 下订单, 写入秒杀订单
         if (goodsService.reduceStock(goods)) {
+            log.info("用户" + user.getId() + "秒杀到商品" + goods.getId());
             return orderService.createOrder(user, goods);
         } else {
             log.warn("商品已经秒杀完毕, 用户" + user.getId() + "秒杀失败!");

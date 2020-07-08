@@ -69,13 +69,18 @@ public class FlashSaleController implements InitializingBean {
         for (GoodsVo goods : goodsList) {
             goods.setStockCount(10);
             // 重置redis
+            log.info("商品" + goods.getId() + "在缓存中库存重置为10");
             redisService.set(GoodsKey.getFlashSaleGoodsStock, "" + goods.getId(), 10);
+            log.info("商品" + goods.getId() + "在缓存中超卖标志重置为false");
             localOverMap.put(goods.getId(), false);
         }
         // redis缓存删除
+        log.info("删除Redis中的秒杀订单OrderKeyfs缓存~");
         redisService.delete(OrderKey.getFlashSaleOrderKey);
+        log.info("删除Redis中的秒杀结束标志FlashSalego缓存~");
         redisService.delete(FlashSaleKey.isGoodsOver);
         // 重置数据库
+        log.info("重置数据库中秒杀产品库存~");
         flashSaleService.reset(goodsList);
         return Result.success(true);
     }
@@ -94,15 +99,18 @@ public class FlashSaleController implements InitializingBean {
     public Result<Integer> list(FlashSaleUser user, @RequestParam("goodsId") long goodsId) {
         // 1.判断用户是否登录
         if (user == null) {
+            log.warn("用户token存在问题, 不存在该用户!");
             return Result.error(CodeMsg.SESSION_ERROR);
         }
         // 2.内存标记, 减少Redis访问
         boolean over = localOverMap.get(goodsId);
         if (over) {
+            log.trace("根据over判断已经卖完~");
             return Result.error(CodeMsg.FLASH_SALE_OVER);
         }
         // 3.Redis 预减库存
         Long stock = redisService.decr(GoodsKey.getFlashSaleGoodsStock, "" + goodsId);
+        log.trace("Redis预减库存, 物品" + goodsId + "剩余数量为 : " + stock);
         if (stock < 0) {
             localOverMap.put(goodsId, true);
             return Result.error(CodeMsg.FLASH_SALE_OVER);
@@ -110,6 +118,7 @@ public class FlashSaleController implements InitializingBean {
         // 4.判断是否已经秒杀到
         FlashSaleOrder fsOrder = orderService.getFlashSaleOrderByUserIdGoodsId(user.getId(), goodsId);
         if (fsOrder != null) {
+            log.trace("入队前, 通过访问redis缓存判断已经秒杀到物品" + goodsId);
             return Result.error(CodeMsg.REPEAT_FLASH_SALE);
         }
         // 5.入队
@@ -117,6 +126,7 @@ public class FlashSaleController implements InitializingBean {
         flashSaleMessage.setUser(user);
         flashSaleMessage.setGoodsId(goodsId);
         mqSender.sendFlashSaleMessage(flashSaleMessage);
+        log.trace("秒杀信息入队," + flashSaleMessage);
 
         return Result.success(0);   // 排队中
 

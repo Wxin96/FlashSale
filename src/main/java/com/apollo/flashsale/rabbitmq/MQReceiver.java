@@ -30,7 +30,7 @@ public class MQReceiver {
     @RabbitListener(queues = MQConfig.FLASH_SALE_QUEUE)
     public void receiveFlashSaleMsg(String message) {
         // 1.从队列中获取信息
-        log.info("MQReceive => receive  message:" + message);
+        log.trace("MQReceive => receive  message:" + message);
         FlashSaleMessage fsMsg = RedisService.stringToBean(message, FlashSaleMessage.class);
         FlashSaleUser user = fsMsg.getUser();
         long goodsId = fsMsg.getGoodsId();
@@ -38,12 +38,14 @@ public class MQReceiver {
         // 2.查看库存, 判断是否进行秒杀
         GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
         if (goods.getStockCount() <= 0) {
+            log.debug("出队后, 判断秒杀商品" + goodsId + "为0, 已经秒杀完毕");
             return;
         }
 
         // 3.判断是否已经秒杀到
         FlashSaleOrder order = orderService.getFlashSaleOrderByUserIdGoodsId(user.getId(), goodsId);
         if (order != null) {
+            log.debug("出队后, 判断用户" +user.getId() + "已经秒杀到商品" + goodsId);
             return;
         }
 

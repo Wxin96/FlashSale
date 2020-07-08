@@ -17,7 +17,7 @@ public class MQSender {
 
     public void sendFlashSaleMessage(FlashSaleMessage fsMsg) {
         String msg = RedisService.beanToString(fsMsg);
-        log.info("MQSender send flashSaleMessage : " + msg);
+        log.trace("MQSender send flashSaleMessage : " + msg);
         amqpTemplate.convertAndSend(MQConfig.FLASH_SALE_QUEUE, msg);
     }
 

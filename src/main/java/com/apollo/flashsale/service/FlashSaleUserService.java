@@ -123,6 +123,7 @@ public class FlashSaleUserService {
         if (!calcPassword.equals(dbPassword)) {
             throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
+        log.trace("检查数据库, 密码匹配成功~");
         // 生成cookie
         String token = UUIDUtil.uuid();
         addCookie(response, token, user);
@@ -145,6 +146,7 @@ public class FlashSaleUserService {
         cookie.setPath("/");
 
         response.addCookie(cookie);
+        log.trace("response写入cookie, Cookie内容为 : " + token + "Cookie有效期为 : " + FlashSaleUserKey.token.expireSeconds() + "秒");
     }
 
 }
