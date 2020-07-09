@@ -18,10 +18,25 @@
     <script type="text/javascript" src="./js/md5.min.js"></script>
     <!-- common.js -->
     <script type="text/javascript" src="./js/common.js"></script>
+    <!-- 加入背景 -->
+    <style type="text/css">
+        html,body{
+            height:100%;
+            width:100%;
+        }
+        body{
+            background:url('./img/bg2.jpg') no-repeat;
+            background-size:100% 100%;
+            /*padding-top:100px;*/
+        }
+        #goodslist td{
+            border-top:1px solid #39503f61;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="panel panel-default">
+    <div class="panel panel-default" style="height:100%;background-color:rgba(222,222,222,0.8)">
         <div class="panel-heading">秒杀商品详情</div>
         <div class="panel-body">
             <span id="userTip"> 您还没有登录，请登陆后再操作<br/></span>
@@ -43,10 +58,23 @@
                     <input type="hidden" id="remainSeconds"/>
                     <span id="flashSaleTip"></span>
                 </td>
+
                 <td>
+                    <!--
                     <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="doFlashSale()">
                         立即秒杀
                     </button>
+                    -->
+                    <div class="row">
+                        <div class="form-inline">
+                            <img id="verifyCodeImg" width="80" height="32" style="display:none"
+                                 onclick="refreshVerifyCode()"/>
+                            <input id="verifyCode" class="form-control" style="display:none"/>
+                            <button class="btn btn-primary" type="button" id="buyButton" onclick="getFlashSalePath()">
+                                立即秒杀
+                            </button>
+                        </div>
+                    </div>
                     <input type="hidden" name="goodsId" id="goodsId"/>
                 </td>
             </tr>
@@ -125,15 +153,44 @@
                 clearTimeout(timeout);
             }
             $("#flashSaleTip").html("秒杀进行中");
+            $("#verifyCodeImg").attr("src", "./sell/verifyCode?goodsId="+$("#goodsId").val());
+            $("#verifyCodeImg").show();
+            $("#verifyCode").show();
         } else {//秒杀已经结束
             $("#buyButton").attr("disabled", true);
             $("#flashSaleTip").html("秒杀已经结束");
+            $("#verifyCodeImg").hide();
+            $("#verifyCode").hide();
         }
     }
 
-    function doFlashSale() {
+    function getFlashSalePath(){
+        var goodsId = $("#goodsId").val();
+        g_showLoading();
         $.ajax({
-            url: "./sell/do_sell",
+            url:"./sell/path",
+            type:"GET",
+            data:{
+                goodsId:goodsId,
+                inputVerifyCode:$("#verifyCode").val()
+            },
+            success:function(data){
+                if(data.code == 0){
+                    var path = data.data;
+                    doFlashSale(path);
+                }else{
+                    layer.msg(data.msg);
+                }
+            },
+            error:function(){
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
+    function doFlashSale(path) {
+        $.ajax({
+            url: "./sell/" + path + "/do_sell",
             type: "POST",
             data: {
                 goodsId: $("#goodsId").val(),
@@ -186,6 +243,10 @@
                 layer.msg("客户端请求有误");
             }
         });
+    }
+
+    function refreshVerifyCode() {
+        $("#verifyCodeImg").attr("src", "./sell/verifyCode?goodsId=" + $("#goodsId").val() + "&timestamp=" + new Date().getTime());
     }
 
 </script>

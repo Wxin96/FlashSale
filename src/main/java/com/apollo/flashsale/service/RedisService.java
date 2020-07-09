@@ -2,7 +2,6 @@ package com.apollo.flashsale.service;
 
 import com.alibaba.fastjson.JSON;
 import com.apollo.flashsale.redis.key.KeyPrefix;
-import com.apollo.flashsale.redis.key.impl.FlashSaleUserKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
@@ -76,7 +75,7 @@ public class RedisService {
         }
     }
 
-    public boolean delete(FlashSaleUserKey prefix, String key) {
+    public boolean delete(KeyPrefix prefix, String key) {
         Jedis jedis = null;
         try {
             // 1.获取链接

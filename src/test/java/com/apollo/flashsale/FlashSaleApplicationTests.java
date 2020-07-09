@@ -73,4 +73,5 @@ class FlashSaleApplicationTests {
     void testUserUtil() throws Exception {
         // UserUtil.createUser(5000);
     }
+
 }

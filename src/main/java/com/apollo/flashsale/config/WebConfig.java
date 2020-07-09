@@ -1,9 +1,11 @@
 package com.apollo.flashsale.config;
 
+import com.apollo.flashsale.access.AccessInterceptor;
 import com.apollo.flashsale.resolver.FlashSaleUserArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -16,6 +18,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     FlashSaleUserArgumentResolver resolver;
+
+    @Autowired
+    AccessInterceptor accessInterceptor;
     /**
      *  注入自定义 处理器方法参数解析器
      * @param resolvers 自定义处理器方法参数解析器 集合
@@ -25,4 +30,8 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(resolver);
     }
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(accessInterceptor);
+    }
 }

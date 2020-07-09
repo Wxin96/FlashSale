@@ -1,8 +1,8 @@
 package com.apollo.flashsale.resolver;
 
+import com.apollo.flashsale.access.UserContext;
 import com.apollo.flashsale.domain.FlashSaleUser;
 import com.apollo.flashsale.service.FlashSaleUserService;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *  参数绑定, 将Controller层中方法中的FlashSaleUser类型参数绑定
@@ -53,48 +49,13 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         logger.trace("解析FlashSaleUser用户~");
-        // 1.获取request和response
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
-
-        // 2.从参数或者Cookie中获取 token(uuid)
-        String paramToken = request.getParameter(FlashSaleUserService.COOKIE_NAME_TOKEN);
-        String cookieToken = getCookieValue(request, FlashSaleUserService.COOKIE_NAME_TOKEN);
-        logger.debug("请求参数中paramToken:" + paramToken);
-        logger.debug("Cookie中cookieToken:" + cookieToken);
-
-        // 3.根据这两个参数, 确定优先级获取FlashSaleUser
-        if (StringUtils.isEmpty(paramToken) && StringUtils.isEmpty(cookieToken)) {
-            logger.debug("Cookie和请求参数中均没有token的值!");
-            return null;
+        // 1.从线程中获取
+        FlashSaleUser user = UserContext.getUser();
+        // 2.判断是否为空
+        if (user == null) {
+            logger.warn("解析用户为空!");
         }
-        String token = StringUtils.isEmpty(paramToken) ? cookieToken : paramToken;
-        logger.debug("Cookie标识token:" + token);
-
-        return flashSaleUserService.getByToken(response, token);
-    }
-
-    /**
-     *  寻找以 cookieName 为键的Cookie
-     * @param request 请求
-     * @param cookieName Cookie键
-     * @return 若对应的减存在, 返回对应的cookie值; 不存在返回null
-     */
-    private String getCookieValue(HttpServletRequest request, String cookieName) {
-        // 1.获取Cookies
-        Cookie[] cookies = request.getCookies();
-        // 2.处理空指针异常
-        if (cookies == null || cookies.length <= 0) {
-            return null;
-        }
-        // 3.寻找key==cookieName的Cookie
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(cookieName)) {
-                return cookie.getValue();
-            }
-        }
-
-        return null;
+        return user;
     }
 
 
