@@ -5,9 +5,11 @@ import com.apollo.flashsale.redis.key.KeyPrefix;
 /**
  *  前缀抽象类
  */
-public class BasePrefix implements KeyPrefix {
-    private int expireSeconds;
+public abstract class BasePrefix implements KeyPrefix {
 
+    private int expireSeconds;
+    // 自定义前缀部分
+    // 真正前缀由class.getSimpleName() + : + prefix 组成
     private String prefix;
 
     // 0代表永不过期

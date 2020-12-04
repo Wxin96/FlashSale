@@ -100,7 +100,7 @@ public class MQConfig {
         Map<String, Object> map = new HashMap<>();
         map.put("header1", "value1");
         map.put("header2", "value2");
-        return BindingBuilder.bind(headerQueue()).to(headersExchange()).whereAll(map).match();
+        return BindingBuilder.bind(headerQueue()).to(headersExchange()).whereAny(map).match();
     }
 
 }

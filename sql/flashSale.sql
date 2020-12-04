@@ -77,8 +77,8 @@ INSERT INTO `flash_sale_order` VALUES ('4', '18348671077', '4', '1');
 -- ----------------------------
 -- Table structure for miaosha_user
 -- ----------------------------
-DROP TABLE IF EXISTS `miaosha_user`;
-CREATE TABLE `miaosha_user` (
+DROP TABLE IF EXISTS `flashsale_user`;
+CREATE TABLE `flashsale_user` (
   `id` bigint(20) NOT NULL COMMENT '用户id,手机号码',
   `nickname` varchar(255) NOT NULL COMMENT '登录昵称',
   `password` varchar(32) DEFAULT NULL COMMENT 'MD5(MD5(pass明文+固定salt)+salt)',
@@ -93,7 +93,7 @@ CREATE TABLE `miaosha_user` (
 -- ----------------------------
 -- Records of miaosha_user
 -- ----------------------------
-INSERT INTO `miaosha_user` VALUES ('18348671077', 'dcc', 'b7797cce01b4b131b433b6acf4add449', '1a2b3c4d', null, '2018-01-27 11:05:07', '2018-01-27 11:05:20', '1');
+INSERT INTO `flashsale_user` VALUES ('18348671077', 'dcc', 'b7797cce01b4b131b433b6acf4add449', '1a2b3c4d', null, '2018-01-27 11:05:07', '2018-01-27 11:05:20', '1');
 
 -- ----------------------------
 -- Table structure for order_info

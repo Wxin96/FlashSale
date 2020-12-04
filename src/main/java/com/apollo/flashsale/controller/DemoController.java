@@ -82,7 +82,7 @@ public class DemoController {
         return Result.success(flag);
     }
 
-/*    @RequestMapping("/mq")
+    @RequestMapping("/mq")
     @ResponseBody
     public Result<String> mq() {
         mqSender.send("hello, rabbitmq");
@@ -109,6 +109,5 @@ public class DemoController {
         mqSender.sendHeader("hello, rabbitmq&");
         return Result.success("Hello, world&");
     }
- */
 
 }

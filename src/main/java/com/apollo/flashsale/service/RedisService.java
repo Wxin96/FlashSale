@@ -174,7 +174,7 @@ public class RedisService {
             jedis = jedisPool.getResource();
             // 2.生成真正的key
             String realKey = prefix.getPrefix() + key;
-            // 3.判断是否村子啊
+            // 3.判断是否存在
             return jedis.incr(realKey);
         } finally {
             returnToPool(jedis);

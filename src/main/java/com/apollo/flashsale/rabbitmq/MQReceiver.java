@@ -53,7 +53,6 @@ public class MQReceiver {
         flashSaleService.flashSale(user, goods);
     }
 
-    /*
     @RabbitListener(queues = MQConfig.QUEUE)
     public void receive(String message) {
         log.info("MQReceive => receive message:" + message);
@@ -73,6 +72,5 @@ public class MQReceiver {
     public void receiveHeaderQueue(byte[] message) {
         log.info("MQReceive => receive header message:" + new String(message));
     }
-    */
 
 }

@@ -5,6 +5,8 @@ import com.apollo.flashsale.rabbitmq.message.FlashSaleMessage;
 import com.apollo.flashsale.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +28,6 @@ public class MQSender {
     //  *  向队列中添加信息
     //  * @param message 添加对象
     //  */
-    /*
     public void send(Object message) {
         String msg = RedisService.beanToString(message);
         log.info("MQSender => send message:" + msg);
@@ -51,10 +52,9 @@ public class MQSender {
         log.info("MQSender => send header message:" + msg);
         MessageProperties properties = new MessageProperties();
         properties.setHeader("header1", "value1");
-        properties.setHeader("header2", "value2");
+        // properties.setHeader("header2", "value2");
         Message obj = new Message(msg.getBytes(), properties);
         amqpTemplate.convertAndSend(MQConfig.HEADERS_EXCHANGE, "", obj);
     }
-    */
 
 }

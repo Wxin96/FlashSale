@@ -61,6 +61,7 @@ public class FlashSaleController implements InitializingBean {
         }
         for (GoodsVo goods : goodsList) {
             redisService.set(GoodsKey.getFlashSaleGoodsStock, "" + goods.getId(), goods.getStockCount());
+            redisService.set(FlashSaleKey.isGoodsOver, "" + goods.getId(), false);
             localOverMap.put(goods.getId(), false);
         }
 
@@ -120,18 +121,18 @@ public class FlashSaleController implements InitializingBean {
             log.trace("根据over判断已经卖完~");
             return Result.error(CodeMsg.FLASH_SALE_OVER);
         }
-        // 4.Redis 预减库存
+        // 4.判断是否已经秒杀到
+        FlashSaleOrder fsOrder = orderService.getFlashSaleOrderByUserIdGoodsId(user.getId(), goodsId);
+        if (fsOrder != null) {
+            log.trace("入队前, 通过访问redis缓存判断已经秒杀到物品" + goodsId);
+            return Result.error(CodeMsg.REPEAT_FLASH_SALE);
+        }
+        // 5.Redis 预减库存
         Long stock = redisService.decr(GoodsKey.getFlashSaleGoodsStock, "" + goodsId);
         log.trace("Redis预减库存, 物品" + goodsId + "剩余数量为 : " + stock);
         if (stock < 0) {
             localOverMap.put(goodsId, true);
             return Result.error(CodeMsg.FLASH_SALE_OVER);
-        }
-        // 5.判断是否已经秒杀到
-        FlashSaleOrder fsOrder = orderService.getFlashSaleOrderByUserIdGoodsId(user.getId(), goodsId);
-        if (fsOrder != null) {
-            log.trace("入队前, 通过访问redis缓存判断已经秒杀到物品" + goodsId);
-            return Result.error(CodeMsg.REPEAT_FLASH_SALE);
         }
         // 5.入队
         FlashSaleMessage flashSaleMessage = new FlashSaleMessage();
@@ -155,6 +156,7 @@ public class FlashSaleController implements InitializingBean {
     @GetMapping("/result")
     @ResponseBody
     public Result<Long> flashSaleResult(FlashSaleUser user, @RequestParam("goodsId") long goodsId) {
+        // 0.用户登陆验证
         if (user == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
         }

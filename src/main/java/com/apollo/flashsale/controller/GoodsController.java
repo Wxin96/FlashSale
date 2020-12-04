@@ -43,7 +43,7 @@ public class GoodsController {
 
     /**
      * 更新：页面缓存（Redis）
-     * 页面缓存后测试, QTS: 2244/sec
+     * 页面缓存后测试, QPS: 2244/sec
      * @param request Request请求
      * @param response Response响应
      * @param model Model数据

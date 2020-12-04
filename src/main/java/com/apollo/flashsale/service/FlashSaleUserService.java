@@ -82,7 +82,6 @@ public class FlashSaleUserService {
     }
 
 
-
     // 根据Cookie中的token信息, 获取FlashSaleUser对象
     public FlashSaleUser getByToken(HttpServletResponse response, String token) {
         // 0.预处理

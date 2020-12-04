@@ -2,12 +2,17 @@ package com.apollo.flashsale.result;
 
 import lombok.Getter;
 
+/**
+ *  两部分构成, 状态码, 状态描述
+ *
+ */
 @Getter
 public class CodeMsg {
     // 代码
     private int code;
     // 信息
     private String msg;
+
     private CodeMsg(int code, String msg) {
         this.code = code;
         this.msg = msg;

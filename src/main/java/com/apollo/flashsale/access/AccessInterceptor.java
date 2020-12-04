@@ -52,6 +52,7 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
             String userLoginLimit = request.getRequestURI();
             if (needLogin) {
                 if (user == null) {
+                    // 利用response传递
                     render(response, CodeMsg.SESSION_ERROR);
                     return false;
                 } else {

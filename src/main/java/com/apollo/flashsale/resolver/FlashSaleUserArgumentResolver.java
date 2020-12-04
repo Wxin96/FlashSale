@@ -22,6 +22,7 @@ public class FlashSaleUserArgumentResolver implements HandlerMethodArgumentResol
 
     Logger logger = LoggerFactory.getLogger(FlashSaleUserArgumentResolver.class);
 
+    // 修改以后, 多余
     @Autowired
     FlashSaleUserService flashSaleUserService;
 
